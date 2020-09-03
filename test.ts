@@ -3,7 +3,9 @@ import {Strategy as JwtStrategy, ExtractJwt, StrategyOptions} from 'passport-jwt
 import jwt from 'jsonwebtoken'
 import express, {Router as router} from 'express'
 import bodyParser from 'body-parser'
+var path = require('path');
 var app = express();
+app.use(express.static(path.join(__dirname, "client", "build")));
 app.use(bodyParser.json({limit: '10mb'}))
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}))
 //const JwtStrategy = require('passport-jwt').Strategy
@@ -16,7 +18,7 @@ const jwtOptionsLoginGen :jwt.SignOptions = {
     issuer: 'magiclinkapp.com',
     audience: 'magiclinkapp.com',
     algorithm: 'HS256',
-    expiresIn: '5m',
+    expiresIn: '25m',
 }
 
 type User = {
@@ -81,7 +83,7 @@ const generateLoginJWT = (user: User): Promise<string> => {
 
 const sanitizeEmail = require('sanitize-mail');
 //app.use(router);
-app.post('/login', (req, res) => {
+app.post('/apiLogin', (req, res) => {
     console.log(req)
     console.log(req.body)
     const email = sanitizeEmail(req.body.email)
@@ -97,8 +99,7 @@ app.post('/login', (req, res) => {
     
   })
   
-app.get(
-      '/login',
+app.get('/apiLogin',
       (req, res, next) => {
         const { incorrectToken, token } = req.query
         console.log(token)
@@ -114,4 +115,8 @@ app.get(
       }, (args)=>{console.log(args)})
     )
 
-    app.listen(3030, ()=>{console.log('running...')})
+    app.get("*", function (req : Express.Response, res : express.Response) {
+        res.sendFile(path.join(__dirname + "/client/build/index.html"));
+      });
+
+    app.listen(3030, ()=>{console.log('3030 running...')})
