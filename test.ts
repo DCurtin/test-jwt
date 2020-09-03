@@ -5,7 +5,7 @@ import express, {Router as router} from 'express'
 import bodyParser from 'body-parser'
 var path = require('path');
 var app = express();
-app.use(express.static(path.join(__dirname, "client", "build")));
+app.use(express.static(path.join(__dirname, "client-auth-test", "build")));
 app.use(bodyParser.json({limit: '10mb'}))
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}))
 //const JwtStrategy = require('passport-jwt').Strategy
@@ -116,7 +116,7 @@ app.get('/apiLogin',
     )
 
     app.get("*", function (req : Express.Response, res : express.Response) {
-        res.sendFile(path.join(__dirname + "/client/build/index.html"));
+        res.sendFile(path.join(__dirname + "/client-auth-test/build/index.html"));
       });
 
     app.listen(3030, ()=>{console.log('3030 running...')})

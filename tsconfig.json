@@ -5,5 +5,5 @@
     "sourceMap": true,
     "esModuleInterop": true,
   },
-  "exclude": ["client/src"]
+  "exclude": ["client-auth-test/src"]
 }

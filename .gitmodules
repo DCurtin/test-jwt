@@ -1,0 +1,3 @@
+[submodule "client-auth-test"]
+	path = client-auth-test
+	url = git@github.com:DCurtin/client-auth-test.git
