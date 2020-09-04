@@ -1,0 +1,1 @@
+INSERT INTO payment_user.user(sid, sess, expire) VALUES ('09526a36-beb6-4e16-95c4-998eca04ea8c','{"name":"daltonc"}','2020-08-04 15:46:23.001');

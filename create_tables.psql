@@ -1,0 +1,4 @@
+DROP TABLE payment_user.user;
+CREATE TABLE payment_user.user("sid" uuid unique NOT NULL,
+	"sess" json NOT NULL,
+	"expire" timestamp(6) NOT NULL);
