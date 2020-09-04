@@ -3,8 +3,41 @@ import {Strategy as JwtStrategy, ExtractJwt, StrategyOptions} from 'passport-jwt
 import jwt from 'jsonwebtoken'
 import express, {Router as router} from 'express'
 import bodyParser from 'body-parser'
+import {Pool} from 'pg'
+import session from 'express-session'
+import { SessionOptions } from 'http2';
+import {v4} from 'uuid'
+const pgSession = require('connect-pg-simple')
+
 var path = require('path');
 var app = express();
+const pgPool = new Pool({
+    host: 'localhost',
+    user: 'postgres',
+    password: 'welcome',
+    database: 'postgres',
+    port: 5432,
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000
+})
+
+app.use(session({
+    store: new (require('connect-pg-simple')(session))({
+        pool: pgPool,
+        schemaName: 'payment_user',
+        tableName : 'user'
+    }),
+    genid: function(req){
+        return v4()
+    },
+    secret: '09526a36-beb6-4e16-95c4-998eca04ea8c',
+    resave: false,
+    cookie: {maxAge: 15 * 60 * 1000, httpOnly: true},
+    saveUninitialized: false
+
+}))
+
 app.use(express.static(path.join(__dirname, "client-auth-test", "build")));
 app.use(bodyParser.json({limit: '10mb'}))
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}))
@@ -98,9 +131,31 @@ app.post('/apiLogin', (req, res) => {
       res.send('test')
     
   })
+
+app.get('/test', (req, res, next)=>{
+    console.log(req.sessionID)
+    console.log(req.session)
+    req.session.regenerate((err)=>{
+        console.log(err)
+    })
+    console.log(req.sessionID)
+    res.send(req.sessionID)
+})
   
 app.get('/apiLogin',
       (req, res, next) => {
+          pgPool.connect((err, client, release)=>{
+              client.query('select * from payment_user.user').then((result)=>{
+                console.log('result')
+                console.log(result.rows)
+              }).catch((err)=>{
+                  console.log('err')
+                  console.log(err)
+              })
+              console.log(err)
+          })
+          req.session
+          /*
         const { incorrectToken, token } = req.query
         console.log(token)
         if (token) {
@@ -112,7 +167,7 @@ app.get('/apiLogin',
         }
       },
       passport.authenticate('jwt', {
-      }, (args)=>{console.log(args)})
+      }, (args)=>{console.log(args)})*/}
     )
 
     app.get("*", function (req : Express.Response, res : express.Response) {
